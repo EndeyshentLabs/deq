@@ -1,2 +1,2 @@
-# Example of basic deque operation. Taken from https://www.concatenative.org/wiki/view/Deque
+# Example of basic deque operations. Taken from https://www.concatenative.org/wiki/view/Deque
 3! !5 !2 sub! !add println! # Will print 4
