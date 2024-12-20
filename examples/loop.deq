@@ -1,0 +1,10 @@
+# Basic range based loop. Basically `for (int i = 0; i < 5; i++)`
+0!
+loopStart:
+dup! 5! lt! trace loopEnd! jz!
+    !"Loop " !print
+    dup! println!
+    1! add!
+    !loopStart !jmp
+loopEnd:
+!"End" !println

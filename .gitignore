@@ -1,0 +1,5 @@
+*.o
+*.ignore
+deq
+/[Bbuild]/
+/.direnv/
