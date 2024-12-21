@@ -21,7 +21,6 @@
 #include <cstdint>
 #include <cstring>
 
-// {{{
 using s64 = std::int64_t;
 using s32 = std::int32_t;
 using s16 = std::int16_t;
@@ -37,7 +36,6 @@ using ssz = std::intptr_t;
 
 using f32 = float;
 using f64 = double;
-// }}}
 
 struct Location {
     std::string filename;
@@ -229,19 +227,6 @@ std::vector<Token> Lexer::lex()
     return tox;
 }
 
-std::vector<std::string> split(const std::string& s, char delim)
-{
-    std::vector<std::string> result;
-    std::stringstream ss(s);
-    std::string item;
-
-    while (getline(ss, item, delim)) {
-        result.push_back(item);
-    }
-
-    return result;
-}
-
 #define NOTE(msg) \
     NOTET(token, msg)
 
@@ -256,19 +241,12 @@ std::vector<std::string> split(const std::string& s, char delim)
     std::cerr << std::endl \
               << token.loc << ": [ERR] " << msg << '\n'
 
-std::unordered_map<std::string, usz> labels;
-
-void trace(const std::deque<deq_t>& deq)
+static void trace(const std::deque<deq_t>& deq)
 {
     for (const auto& v : deq) {
         std::cout << v << "(" << human(v.type) << ")" << " ";
     }
     std::cout << '\n';
-}
-
-static inline bool deqHasSize(const std::deque<deq_t>& deq, usz n)
-{
-    return deq.size() >= n;
 }
 
 struct TypecheckResult {
@@ -307,9 +285,10 @@ static bool diag(std::optional<TypecheckResult> r, Token token)
         }                      \
     } while (0)
 
-void interpret(const std::vector<Token>& tox, bool debug = false)
+static void interpret(const std::vector<Token>& tox, bool debug = false)
 {
     std::deque<deq_t> deq;
+    std::unordered_map<std::string, usz> labels;
 
     {
         usz i = 0;
@@ -390,7 +369,7 @@ void interpret(const std::vector<Token>& tox, bool debug = false)
         };
 
         auto expect = [&deq, &token](usz n) {
-            if (!deqHasSize(deq, n)) {
+            if (deq.size() < n) {
                 ERR("expected to have at least " << n << " elements on the deq");
                 std::exit(1);
             }
@@ -717,25 +696,38 @@ void interpret(const std::vector<Token>& tox, bool debug = false)
     }
 }
 
+static void usage(const char* program)
+{
+    std::cout << "Usage: " << program << " [-d] file.deq\n";
+}
+
 int main(int argc, char** argv)
 {
+    const char* program = argv[0];
     if (argc < 2) {
         std::cerr << "No input file was provided!\n";
-        std::cout << "Usage: " << argv[0] << " file.deq\n";
+        usage(program);
         return 1;
     }
 
-    int fileArgc = 1;
     bool debug = false;
-    if (std::strcmp(argv[1], "-d") == 0) {
-        debug = true;
-        fileArgc = 2;
+    const char* source = nullptr;
+
+    for (int i = 1; i < argc; i++) {
+        const char* arg = argv[i];
+        if (std::strcmp(arg, "-d") == 0) {
+            debug = true;
+        } else {
+            if (source != nullptr) {
+                std::cerr << "unexpected CLI argument '" << arg << "'\n";
+                usage(program);
+                return 1;
+            }
+            source = arg;
+        }
     }
-    assert(fileArgc >= 1 && fileArgc < argc); // sanity check
 
-    std::string filename(argv[fileArgc]);
-
-    Lexer l(filename);
+    Lexer l(source);
     auto tox = l.lex();
 
     interpret(tox, debug);
