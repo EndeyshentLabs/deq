@@ -1,7 +1,7 @@
 # Basic range based loop. Basically `for (int i = 0; i < 5; i++)`
 0!
 loopStart:
-dup! 5! lt! trace loopEnd! jz!
+dup! 5! lt! loopEnd! jz!
     !"Loop " !print
     dup! println!
     1! add!
