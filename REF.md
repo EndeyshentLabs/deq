@@ -1,3 +1,6 @@
+# Language reference
+
+## Directional
 - `drop` ( a -- ) -- remove the top element
 - `dup` ( a -- a a ) -- duplicate the top element
 - `swap` ( a b -- b a ) -- swap 2 elements
@@ -24,8 +27,14 @@
 - `or` ( a b -- a||b ) -- (logical) OR
 - `not` ( a -- !a ) -- (logical) NOT
 - `jmp` ( addr -- ) -- unconditional jump to label `addr`
+- `call` ( addr -- ) -- call to label `addr`. Return from call is performed using `ret` keyword.
 - `jz` ( cond addr -- ) -- jump to label `addr` if cond==0
 - `jnz` ( cond addr -- ) -- jump to label `addr` if cond!=0
 - `print` ( a -- ) -- print any element (works with all types)
 - `println` ( a -- ) -- `print`, but also prints life-feed (aka new-line) at the end
 - `putc` ( c -- ) -- prints `c` as character to stdout
+
+## Not directional
+- `trace` -- print current deque state
+- `ret` -- return from call
+- `exit` -- halt execution
