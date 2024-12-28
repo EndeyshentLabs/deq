@@ -1,0 +1,8 @@
+# Simple procedure example
+
+"EndeyshentLabs"! greet! call!
+
+exit
+greet:
+    "Hello, "! print! print! !"!" !println
+    ret
