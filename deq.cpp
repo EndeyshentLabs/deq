@@ -288,6 +288,7 @@ static bool diag(std::optional<TypecheckResult> r, Token token)
 static void interpret(const std::vector<Token>& tox, bool debug = false)
 {
     std::deque<deq_t> deq;
+    std::vector<usz> callstack;
     std::unordered_map<std::string, usz> labels;
 
     {
@@ -319,6 +320,17 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
 
             i++;
             continue;
+        } else if (tok == "ret") {
+            if (callstack.size() < 1) {
+                ERR("cannot return: call stack is empty!");
+                std::exit(1);
+            }
+
+            i = callstack.back() + 1;
+            callstack.pop_back();
+            continue;
+        } else if (tok == "exit") {
+            break;
         }
 
         if (tok.size() < 2) {
@@ -637,6 +649,13 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             DIAG(typecheck<1>({ v }, { Integer }));
 
             i = std::get<s64>(v.as);
+        } else if (word == "call") {
+            expect(1);
+            deq_t v = pop();
+            DIAG(typecheck<1>({ v }, { Integer }));
+
+            callstack.push_back(i);
+            i = std::get<s64>(v.as);
         } else if (word == "jz") {
             expect(2);
             deq_t addr = pop();
@@ -690,7 +709,13 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
         }
 
         if (debug) {
-            std::cout << "DEQUE STATE:" << '\n';
+            std::cout << "\nCALLSTACK: ";
+            for (const auto& i : callstack) {
+                std::cout << i;
+            }
+            std::cout << '\n';
+
+            std::cout << "DEQUE STATE: ";
             trace(deq);
         }
     }
