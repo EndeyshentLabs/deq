@@ -144,24 +144,27 @@ private:
     std::string source;
     bool advance();
     char peek();
+    bool isend();
 };
 
-bool Lexer::advance()
+bool Lexer::isend()
 {
-    if (cursor > source.size() - 1 || cursor + 1 > source.size() - 1) {
+    if ((cursor > source.size() - 1) || (cursor + 1 > source.size() - 1) || c == '\0') {
         c = 0;
         cursor = -1;
-        return false;
-    }
-    cursor++;
-    c = source.at(cursor);
-    if (c == '\n') {
-        loc.col = 0;
-        loc.row++;
         return true;
     }
 
+    return false;
+}
+
+bool Lexer::advance()
+{
+    cursor++;
+    c = source.at(cursor);
     loc.col++;
+
+    isend();
 
     return true;
 }
@@ -179,8 +182,10 @@ std::vector<Token> Lexer::lex()
     std::vector<Token> tox;
 
     while (c != '\0') {
-        if (c == ' ') {
+        if (c == '\n') {
             advance();
+            loc.row++;
+            loc.col = 0;
         } else if (std::isspace(c)) {
             advance();
         } else if (c == '#') {
@@ -216,11 +221,12 @@ std::vector<Token> Lexer::lex()
             tox.push_back({ sloc, ss.str() });
         } else {
             std::stringstream ss;
+            auto sloc = loc;
             do {
                 ss << c;
                 advance();
             } while (!std::isspace(c) && c != '\0');
-            tox.push_back({ loc, ss.str() });
+            tox.push_back({ sloc, ss.str() });
         }
     }
 
