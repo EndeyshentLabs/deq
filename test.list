@@ -2,6 +2,8 @@
 ./deq tests/deque.deq
 ./deq tests/labels.deq
 ./deq tests/stack.deq
+./deq tests/calldir.deq
+./deq tests/invert.deq
 ./deq examples/deque-operations.deq
 ./deq examples/hello.deq
 ./deq examples/loop.deq
