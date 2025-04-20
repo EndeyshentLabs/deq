@@ -1,0 +1,13 @@
+# basic labels, loops and conditions
+# output: 0
+# output: 1
+# output: 2
+# output: 3
+# output: 4
+0!
+start:
+dup! 5! lt! end! jz!
+    dup! println!
+    1! add!
+    !start !jmp
+end:

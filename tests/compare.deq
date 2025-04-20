@@ -1,0 +1,11 @@
+69! 420!
+
+over! over! lt!         println!
+over! over! swap! lt!   println!
+over! over! lteq!       println!
+over! over! swap! lteq! println!
+
+over! over! gt!         println!
+over! over! swap! gt!   println!
+over! over! gteq!       println!
+over! over! swap! gteq! println!
