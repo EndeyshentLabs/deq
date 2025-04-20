@@ -15,3 +15,12 @@ jobs:
         run: make CXX="${{ matrix.cxx }}"
       - name: Run testing
         run: ./rere.py replay ./test.list
+  macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout GIT repo
+        uses: actions/checkout@v4
+      - name: Build Deq executable
+        run: make
+      - name: Run testing
+        run: ./rere.py replay ./test.list
