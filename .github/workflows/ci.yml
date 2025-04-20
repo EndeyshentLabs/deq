@@ -1,0 +1,17 @@
+name: Deq building and testing
+
+on: [push, pull_request]
+
+jobs:
+  linux-ubuntu:
+    strategy:
+      matrix:
+        cc: [gcc, clang]
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout GIT repo
+      uses: actions/checkout@v4
+    - name: Build Deq executable
+      run: make
+    - name: Run testing
+      run: ./rere.py replay ./test.list
