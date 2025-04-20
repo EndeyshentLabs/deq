@@ -12,6 +12,6 @@ jobs:
       - name: Checkout GIT repo
         uses: actions/checkout@v4
       - name: Build Deq executable
-        run: make
+        run: make CXX="${{ matrix.cc }}"
       - name: Run testing
         run: ./rere.py replay ./test.list
