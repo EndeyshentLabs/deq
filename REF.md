@@ -33,6 +33,8 @@
 - `print` ( a -- ) -- print any element (works with all types)
 - `println` ( a -- ) -- `print`, but also prints life-feed (aka new-line) at the end
 - `putc` ( c -- ) -- prints `c` as character to stdout
+- `calldir` ( -- dir ) -- pushes 1 if label was called with left direction, 0 otherwise
+- `invertdir` ( -- newinverted ) -- pushes new value of `inverted` flag and flips it effectively inverting directions of all subsequent operations
 
 ## Not directional
 - `trace` -- print current deque state

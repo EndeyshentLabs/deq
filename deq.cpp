@@ -15,7 +15,6 @@
 #include <variant>
 #include <vector>
 
-#include <cassert>
 #include <cctype>
 #include <cerrno>
 #include <cstdint>
@@ -294,8 +293,9 @@ static bool diag(std::optional<TypecheckResult> r, Token token)
 static void interpret(const std::vector<Token>& tox, bool debug = false)
 {
     std::deque<deq_t> deq;
-    std::vector<usz> callstack;
+    std::vector<std::tuple<usz, bool>> callstack;
     std::unordered_map<std::string, usz> labels;
+    bool inverted = false;
 
     {
         usz i = 0;
@@ -332,7 +332,7 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
                 std::exit(1);
             }
 
-            i = callstack.back() + 1;
+            i = std::get<0>(callstack.back()) + 1;
             callstack.pop_back();
             continue;
         } else if (tok == "exit") {
@@ -366,16 +366,18 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             word = word.substr(0, word.size() - 1);
         }
 
-        auto push = [left, &deq](deq_t v) {
-            if (left) {
+        auto push = [left, inverted, &deq](deq_t v) {
+            bool dir = inverted ? !left : left;
+            if (dir) {
                 deq.push_front(v);
             } else {
                 deq.push_back(v);
             }
         };
 
-        auto pop = [left, &deq]() -> deq_t {
-            if (left) {
+        auto pop = [left, inverted, &deq]() -> deq_t {
+            bool dir = inverted ? !left : left;
+            if (dir) {
                 deq_t ret = deq.front();
                 deq.pop_front();
                 return ret;
@@ -660,7 +662,7 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t v = pop();
             DIAG(typecheck<1>({ v }, { Integer }));
 
-            callstack.push_back(i);
+            callstack.push_back({ i, left });
             i = std::get<s64>(v.as);
         } else if (word == "jz") {
             expect(2);
@@ -704,6 +706,15 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             std::cout << static_cast<char>(std::get<s64>(v.as));
 
             i++;
+        } else if (word == "calldir") {
+            push({ token, static_cast<s64>(std::get<1>(callstack.back())) });
+
+            i++;
+        } else if (word == "invertdir") {
+            inverted = !inverted;
+            push({ token, static_cast<s64>(left) });
+
+            i++;
         } else {
             if (labels.contains(word)) {
                 push({ token, static_cast<s64>(labels.at(word)) });
@@ -716,12 +727,12 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
 
         if (debug) {
             std::cout << "\nCALLSTACK: ";
-            for (const auto& i : callstack) {
+            for (const auto& [i, isleft] : callstack) {
                 std::cout << i;
             }
             std::cout << '\n';
 
-            std::cout << "DEQUE STATE: ";
+            std::cout << "DEQUE STATE(inverted: " << inverted <<"): ";
             trace(deq);
         }
     }
