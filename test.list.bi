@@ -1,4 +1,4 @@
-:i count 8
+:i count 10
 :b shell 23
 ./deq tests/compare.deq
 :i returncode 0
@@ -40,6 +40,28 @@
 :i returncode 0
 :b stdout 3
 70
+
+:b stderr 0
+
+:b shell 23
+./deq tests/calldir.deq
+:i returncode 0
+:b stdout 55
+Called with right direction
+Called with left direction
+
+:b stderr 0
+
+:b shell 22
+./deq tests/invert.deq
+:i returncode 0
+:b stdout 20
+1
+1337
+69
+0
+1337
+69
 
 :b stderr 0
 
