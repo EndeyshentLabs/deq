@@ -6,12 +6,12 @@ jobs:
   linux-ubuntu:
     strategy:
       matrix:
-        cc: [gcc, clang]
+        cxx: [g++, clang++]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout GIT repo
         uses: actions/checkout@v4
       - name: Build Deq executable
-        run: make CXX="${{ matrix.cc }}"
+        run: make CXX="${{ matrix.cxx }}"
       - name: Run testing
         run: ./rere.py replay ./test.list
