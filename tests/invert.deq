@@ -1,0 +1,15 @@
+# Strange test. In both cases result should be the same (except for `inverted`
+# flag value ofc)
+!invertdir
+outputTest! call!
+
+0! dup! setinverted!
+outputTest! call!
+
+exit
+outputTest:
+    69! 1337!
+    !println
+    println!
+    !println
+    ret

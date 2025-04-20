@@ -1,0 +1,14 @@
+proc! call!
+!proc !call
+
+exit
+proc:
+    "Called with "! print!
+    calldir! 0! eq! proc.right! jnz!
+    "left"! print!
+    !proc.over !jmp
+proc.right:
+    "right"! print!
+proc.over:
+    " direction"! println!
+    ret
