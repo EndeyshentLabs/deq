@@ -35,6 +35,7 @@
 - `putc` ( c -- ) -- prints `c` as character to stdout
 - `calldir` ( -- dir ) -- pushes 1 if label was called with left direction, 0 otherwise
 - `invertdir` ( -- newinverted ) -- pushes new value of `inverted` flag and flips it effectively inverting directions of all subsequent operations
+- `setinverted` ( invertflag -- ) -- sets value of `inverted` flag
 
 ## Not directional
 - `trace` -- print current deque state

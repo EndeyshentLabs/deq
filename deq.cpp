@@ -715,6 +715,13 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             push({ token, static_cast<s64>(left) });
 
             i++;
+        } else if (word == "setinverted") {
+            expect(1);
+            deq_t v = pop();
+            DIAG(typecheck<1>({ v }, { Integer }));
+            inverted = static_cast<bool>(std::get<s64>(v.as));
+
+            i++;
         } else {
             if (labels.contains(word)) {
                 push({ token, static_cast<s64>(labels.at(word)) });
