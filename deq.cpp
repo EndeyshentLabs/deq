@@ -36,6 +36,12 @@ using ssz = std::intptr_t;
 using f32 = float;
 using f64 = double;
 
+#define UNREACHABLE() \
+    do { \
+        std::cerr << __FILE__ << ":" << __LINE__ << ": Unreachable in " << __PRETTY_FUNCTION__ << std::endl; \
+        abort(); \
+    } while (0)
+
 struct Location {
     std::string filename;
     u64 col;
@@ -96,6 +102,8 @@ static std::string human(Value::Type t, bool plural = false)
         return plural ? "reals" : "a real";
     case Value::Type::String:
         return plural ? "strings" : "a string";
+    default:
+        UNREACHABLE();
     }
 }
 
