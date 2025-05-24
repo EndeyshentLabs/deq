@@ -1,0 +1,2 @@
+"1.15f"! >real! 2.0f! mul! println!
+"138"! >integer! 2! div! println!
