@@ -36,10 +36,11 @@ using ssz = std::intptr_t;
 using f32 = float;
 using f64 = double;
 
-#define UNREACHABLE() \
-    do { \
-        std::cerr << __FILE__ << ":" << __LINE__ << ": Unreachable in " << __PRETTY_FUNCTION__ << std::endl; \
-        abort(); \
+#define UNREACHABLE()                                                          \
+    do {                                                                       \
+        std::cerr << __FILE__ << ":" << __LINE__ << ": Unreachable in "        \
+                  << __PRETTY_FUNCTION__ << std::endl;                         \
+        abort();                                                               \
     } while (0)
 
 struct Location {
@@ -130,7 +131,8 @@ public:
 
         std::ifstream infile { filename };
         if (!infile.is_open()) {
-            std::cerr << "[ERR] Failed to open file '" << filename << "': " << std::strerror(errno) << '\n';
+            std::cerr << "[ERR] Failed to open file '" << filename
+                      << "': " << std::strerror(errno) << '\n';
             std::exit(1);
         }
 
@@ -156,7 +158,8 @@ private:
 
 bool Lexer::isend()
 {
-    if ((cursor > source.size() - 1) || (cursor + 1 > source.size() - 1) || c == '\0') {
+    if ((cursor > source.size() - 1) || (cursor + 1 > source.size() - 1)
+        || c == '\0') {
         c = 0;
         cursor = -1;
         return true;
@@ -240,24 +243,21 @@ std::vector<Token> Lexer::lex()
     return tox;
 }
 
-#define NOTE(msg) \
-    NOTET(token, msg)
+#define NOTE(msg) NOTET(token, msg)
 
-#define NOTET(token, msg)  \
-    std::cout << std::endl \
-              << token.loc << ": [NOTE] " << msg << '\n'
+#define NOTET(token, msg)                                                      \
+    std::cout << std::endl << token.loc << ": [NOTE] " << msg << '\n'
 
-#define ERR(msg) \
-    ERRT(token, msg)
+#define ERR(msg) ERRT(token, msg)
 
-#define ERRT(token, msg)   \
-    std::cerr << std::endl \
-              << token.loc << ": [ERR] " << msg << '\n'
+#define ERRT(token, msg)                                                       \
+    std::cerr << std::endl << token.loc << ": [ERR] " << msg << '\n'
 
 static void trace(const std::deque<deq_t>& deq)
 {
     for (const auto& v : deq) {
-        std::cout << v << "(" << human(v.type) << ")" << " ";
+        std::cout << v << "(" << human(v.type) << ")"
+                  << " ";
     }
     std::cout << '\n';
 }
@@ -269,7 +269,8 @@ struct TypecheckResult {
 };
 
 template <usz Nm>
-static std::optional<TypecheckResult> typecheck(const std::array<Value, Nm>& vals, const std::array<Value::Type, Nm>& types)
+static std::optional<TypecheckResult> typecheck(
+    const std::array<Value, Nm>& vals, const std::array<Value::Type, Nm>& types)
 {
     for (usz i = 0; i < Nm; i++) {
         if (vals.at(i).type != types.at(i)) {
@@ -285,17 +286,19 @@ static bool diag(std::optional<TypecheckResult> r, Token token)
     if (!r)
         return true;
 
-    ERRT(r->val.tok, "expected to be " << human(r->expected) << " but got " << human(r->val.type));
+    ERRT(r->val.tok,
+        "expected to be " << human(r->expected) << " but got "
+                          << human(r->val.type));
     NOTE("for this operation");
 
     return false;
 }
 
-#define DIAG(v)                \
-    do {                       \
-        if (!diag(v, token)) { \
-            std::exit(1);      \
-        }                      \
+#define DIAG(v)                                                                \
+    do {                                                                       \
+        if (!diag(v, token)) {                                                 \
+            std::exit(1);                                                      \
+        }                                                                      \
     } while (0)
 
 static void interpret(const std::vector<Token>& tox, bool debug = false)
@@ -357,7 +360,8 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             std::exit(1);
         }
         if (tok.back() == ':' && tok.front() == '!') {
-            ERR("label cannot contain direction specifier! Consider removing '!', if "
+            ERR("label cannot contain direction specifier! Consider removing "
+                "'!', if "
                 "it is a label.");
             std::exit(1);
         }
@@ -398,13 +402,15 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
 
         auto expect = [&deq, &token](usz n) {
             if (deq.size() < n) {
-                ERR("expected to have at least " << n << " elements on the deq");
+                ERR("expected to have at least " << n
+                                                 << " elements on the deq");
                 std::exit(1);
             }
         };
 
         using enum Value::Type;
-        if ((word.front() == '-' && word.back() == 'f') || (std::isdigit(word.front()) && word.back() == 'f')) {
+        if ((word.front() == '-' && word.back() == 'f')
+            || (std::isdigit(word.front()) && word.back() == 'f')) {
             push({ token, static_cast<f64>(std::stod(word)) });
 
             i++;
@@ -472,7 +478,8 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
                 DIAG(typecheck<2>({ v1, v2 }, { Real, Real }));
                 push({ token, std::get<f64>(v1.as) + std::get<f64>(v2.as) });
             } else {
-                ERR("expected two " << human(Integer, true) << " or two " << human(Real, true));
+                ERR("expected two " << human(Integer, true) << " or two "
+                                    << human(Real, true));
                 std::exit(1);
             }
 
@@ -488,7 +495,8 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
                 DIAG(typecheck<2>({ v1, v2 }, { Real, Real }));
                 push({ token, std::get<f64>(v1.as) * std::get<f64>(v2.as) });
             } else {
-                ERR("expected two " << human(Integer, true) << " or two " << human(Real, true));
+                ERR("expected two " << human(Integer, true) << " or two "
+                                    << human(Real, true));
                 std::exit(1);
             }
 
@@ -499,12 +507,15 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t below = pop();
             if (below.type == Integer || top.type == Integer) {
                 DIAG(typecheck<2>({ below, top }, { Integer, Integer }));
-                push({ token, std::get<s64>(below.as) - std::get<s64>(top.as) });
+                push(
+                    { token, std::get<s64>(below.as) - std::get<s64>(top.as) });
             } else if (below.type == Real || top.type == Real) {
                 DIAG(typecheck<2>({ below, top }, { Real, Real }));
-                push({ token, std::get<f64>(below.as) - std::get<f64>(top.as) });
+                push(
+                    { token, std::get<f64>(below.as) - std::get<f64>(top.as) });
             } else {
-                ERR("expected two " << human(Integer, true) << " or two " << human(Real, true));
+                ERR("expected two " << human(Integer, true) << " or two "
+                                    << human(Real, true));
                 std::exit(1);
             }
 
@@ -515,12 +526,15 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t below = pop();
             if (below.type == Integer || top.type == Integer) {
                 DIAG(typecheck<2>({ below, top }, { Integer, Integer }));
-                push({ token, std::get<s64>(below.as) / std::get<s64>(top.as) });
+                push(
+                    { token, std::get<s64>(below.as) / std::get<s64>(top.as) });
             } else if (below.type == Real || top.type == Real) {
                 DIAG(typecheck<2>({ below, top }, { Real, Real }));
-                push({ token, std::get<f64>(below.as) / std::get<f64>(top.as) });
+                push(
+                    { token, std::get<f64>(below.as) / std::get<f64>(top.as) });
             } else {
-                ERR("expected two " << human(Integer, true) << " or two " << human(Real, true));
+                ERR("expected two " << human(Integer, true) << " or two "
+                                    << human(Real, true));
                 std::exit(1);
             }
 
@@ -578,13 +592,19 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t v2 = pop();
             if (v1.type == Integer || v2.type == Integer) {
                 DIAG(typecheck<2>({ v1, v2 }, { Integer, Integer }));
-                push({ token, static_cast<s64>(std::get<s64>(v1.as) == std::get<s64>(v2.as)) });
+                push({ token,
+                    static_cast<s64>(
+                        std::get<s64>(v1.as) == std::get<s64>(v2.as)) });
             } else if (v1.type == Real || v2.type == Real) {
                 DIAG(typecheck<2>({ v1, v2 }, { Real, Real }));
-                push({ token, static_cast<s64>(std::get<f64>(v1.as) == std::get<f64>(v2.as)) });
+                push({ token,
+                    static_cast<s64>(
+                        std::get<f64>(v1.as) == std::get<f64>(v2.as)) });
             } else if (v1.type == String || v2.type == String) {
                 DIAG(typecheck<2>({ v1, v2 }, { String, String }));
-                push({ token, static_cast<s64>(std::get<std::string>(v1.as) == std::get<std::string>(v2.as)) });
+                push({ token,
+                    static_cast<s64>(std::get<std::string>(v1.as)
+                        == std::get<std::string>(v2.as)) });
             }
 
             i++;
@@ -594,13 +614,19 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t v2 = pop();
             if (v1.type == Integer || v2.type == Integer) {
                 DIAG(typecheck<2>({ v1, v2 }, { Integer, Integer }));
-                push({ token, static_cast<s64>(std::get<s64>(v1.as) != std::get<s64>(v2.as)) });
+                push({ token,
+                    static_cast<s64>(
+                        std::get<s64>(v1.as) != std::get<s64>(v2.as)) });
             } else if (v1.type == Real || v2.type == Real) {
                 DIAG(typecheck<2>({ v1, v2 }, { Real, Real }));
-                push({ token, static_cast<s64>(std::get<f64>(v1.as) != std::get<f64>(v2.as)) });
+                push({ token,
+                    static_cast<s64>(
+                        std::get<f64>(v1.as) != std::get<f64>(v2.as)) });
             } else if (v1.type == String || v2.type == String) {
                 DIAG(typecheck<2>({ v1, v2 }, { String, String }));
-                push({ token, static_cast<s64>(std::get<std::string>(v1.as) != std::get<std::string>(v2.as)) });
+                push({ token,
+                    static_cast<s64>(std::get<std::string>(v1.as)
+                        != std::get<std::string>(v2.as)) });
             }
 
             i++;
@@ -609,7 +635,9 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t top = pop();
             deq_t below = pop();
             DIAG(typecheck<2>({ below, top }, { Integer, Integer }));
-            push({ token, static_cast<s64>(std::get<s64>(below.as) < std::get<s64>(top.as)) });
+            push({ token,
+                static_cast<s64>(
+                    std::get<s64>(below.as) < std::get<s64>(top.as)) });
 
             i++;
         } else if (word == "lteq") {
@@ -617,7 +645,9 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t top = pop();
             deq_t below = pop();
             DIAG(typecheck<2>({ below, top }, { Integer, Integer }));
-            push({ token, static_cast<s64>(std::get<s64>(below.as) <= std::get<s64>(top.as)) });
+            push({ token,
+                static_cast<s64>(
+                    std::get<s64>(below.as) <= std::get<s64>(top.as)) });
 
             i++;
         } else if (word == "gt") {
@@ -625,7 +655,9 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t top = pop();
             deq_t below = pop();
             DIAG(typecheck<2>({ below, top }, { Integer, Integer }));
-            push({ token, static_cast<s64>(std::get<s64>(below.as) > std::get<s64>(top.as)) });
+            push({ token,
+                static_cast<s64>(
+                    std::get<s64>(below.as) > std::get<s64>(top.as)) });
 
             i++;
         } else if (word == "gteq") {
@@ -633,7 +665,9 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t top = pop();
             deq_t below = pop();
             DIAG(typecheck<2>({ below, top }, { Integer, Integer }));
-            push({ token, static_cast<s64>(std::get<s64>(below.as) >= std::get<s64>(top.as)) });
+            push({ token,
+                static_cast<s64>(
+                    std::get<s64>(below.as) >= std::get<s64>(top.as)) });
 
             i++;
         } else if (word == "and") {
@@ -641,7 +675,9 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t v2 = pop();
             deq_t v1 = pop();
             DIAG(typecheck<2>({ v1, v2 }, { Integer, Integer }));
-            push({ token, static_cast<s64>(std::get<s64>(v1.as) && std::get<s64>(v2.as)) });
+            push({ token,
+                static_cast<s64>(
+                    std::get<s64>(v1.as) && std::get<s64>(v2.as)) });
 
             i++;
         } else if (word == "or") {
@@ -649,7 +685,9 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             deq_t v2 = pop();
             deq_t v1 = pop();
             DIAG(typecheck<2>({ v1, v2 }, { Integer, Integer }));
-            push({ token, static_cast<s64>(std::get<s64>(v1.as) || std::get<s64>(v2.as)) });
+            push({ token,
+                static_cast<s64>(
+                    std::get<s64>(v1.as) || std::get<s64>(v2.as)) });
 
             i++;
         } else if (word == "not") {
@@ -730,6 +768,70 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             inverted = static_cast<bool>(std::get<s64>(v.as));
 
             i++;
+        } else if (word == ">real") {
+            expect(1);
+            deq_t v = pop();
+
+            switch (v.type) {
+            case Integer:
+                DIAG(typecheck<1>({ v }, { Integer }));
+                push({ token, static_cast<f64>(std::get<s64>(v.as)) });
+                break;
+            case String:
+                DIAG(typecheck<1>({ v }, { String }));
+                push({ token,
+                    static_cast<f64>(std::stod(std::get<std::string>(v.as))) });
+                break;
+            case Real:
+                ERR("expected " << human(Integer) << " or " << human(String));
+                std::exit(1);
+                UNREACHABLE();
+            }
+
+            i++;
+        } else if (word == ">integer") {
+            expect(1);
+            deq_t v = pop();
+
+            switch (v.type) {
+            case Real:
+                DIAG(typecheck<1>({ v }, { Real }));
+                push({ token, static_cast<s64>(std::get<f64>(v.as)) });
+                break;
+            case String:
+                DIAG(typecheck<1>({ v }, { String }));
+                push({ token,
+                    static_cast<s64>(
+                        std::stoll(std::get<std::string>(v.as))) });
+                break;
+            case Integer:
+                ERR("expected " << human(Real) << " or " << human(String));
+                std::exit(1);
+                UNREACHABLE();
+            }
+
+            i++;
+        } else if (word == ">string") {
+            expect(1);
+            deq_t v = pop();
+            switch (v.type) {
+            case Integer:
+                DIAG(typecheck<1>({ v },
+                    { Integer })); // NOTE: Is this really needed? <2025-05-24>
+                push({ token, std::to_string(std::get<s64>(v.as)) });
+                break;
+            case Real:
+                DIAG(typecheck<1>({ v },
+                    { Real })); // NOTE: Is this really needed? <2025-05-24>
+                push({ token, std::to_string(std::get<f64>(v.as)) });
+                break;
+            case String:
+                ERR("expected " << human(Integer) << " or " << human(Real));
+                std::exit(1);
+                UNREACHABLE();
+            }
+
+            i++;
         } else {
             if (labels.contains(word)) {
                 push({ token, static_cast<s64>(labels.at(word)) });
@@ -747,7 +849,7 @@ static void interpret(const std::vector<Token>& tox, bool debug = false)
             }
             std::cout << '\n';
 
-            std::cout << "DEQUE STATE(inverted: " << inverted <<"): ";
+            std::cout << "DEQUE STATE(inverted: " << inverted << "): ";
             trace(deq);
         }
     }
