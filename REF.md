@@ -36,6 +36,9 @@
 - `calldir` ( -- dir ) -- pushes 1 if label was called with left direction, 0 otherwise
 - `invertdir` ( -- newinverted ) -- pushes new value of `inverted` flag and flips it effectively inverting directions of all subsequent operations
 - `setinverted` ( invertflag -- ) -- sets value of `inverted` flag
+- `>real` ( int|string -- real ) -- casts integer or string to real
+- `>integer` ( real|string -- int ) -- casts real or string to integer
+- `>string` ( int|real -- string ) -- casts integer or real to string
 
 ## Not directional
 - `trace` -- print current deque state
